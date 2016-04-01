@@ -11,6 +11,6 @@
   },
   "dependencies": {
     "Rabbit.Cache": "1.1.2",
-    "Repository.Mongo": "1.0.1"
-  } 
+    "Repository.Mongo": "1.0.2"
+  }
 }
