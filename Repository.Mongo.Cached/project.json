@@ -1,11 +1,11 @@
 {
-  "version": "1.0.0-*",
+  "version": "1.0.1-*",
   "description": "Repository.Mongo.Cached Class Library",
   "authors": [ "UsameEsendir" ],
   "tags": [ "mongo", "repository", "cache" ],
   "projectUrl": "https://github.com/esendir/MongoRepository.Cached",
   "summary": "This package contains cached repository which is based on Repository.Mongo package. Cache object should be based on Rabbit.Cache",
-  "releaseNotes": "First version",
+  "releaseNotes": "Documentation included",
   "frameworks": {
     "net46": { }
   },
