@@ -11,15 +11,18 @@ namespace Repository.Mongo
     public class EntityCache<T> where T : IEntity
     {
         /// <summary>
-        /// constructor with a cache
+        /// constructor with limited duration cache
         /// </summary>
-        /// <param name="cache">Rabbit cache</param>
-        public EntityCache(ICache cache)
+        /// <param name="cache">rabbit cache</param>
+        /// <param name="cacheDuration">duration in minutes</param>
+        public EntityCache(ICache cache, int cacheDuration)
         {
             Cache = cache;
+            CacheDuration = cacheDuration;
         }
 
         private ICache Cache { get; set; }
+        private int CacheDuration { get; set; } = 0;
 
         /// <summary>
         /// check if item is cached
@@ -108,24 +111,12 @@ namespace Repository.Mongo
         /// <returns>true if successful, otherwise false</returns>
         public bool Set(string key, object value)
         {
-            return Set(key, value, 0);
-        }
-
-        /// <summary>
-        /// add item into cache
-        /// </summary>
-        /// <param name="key">custom key value, entity id is default</param>
-        /// <param name="value">item to cache</param>
-        /// <param name="min">duration of cache time</param>
-        /// <returns>true if successful, otherwise false</returns>
-        public bool Set(string key, object value, int min)
-        {
             if (Equals(value, null))
                 return false;
             if (Contains(key))
                 Remove(key);
 
-            return min > 0 ? Cache.Set(key, value, TimeSpan.FromMinutes(min)) : Cache.Set(key, value);
+            return CacheDuration > 0 ? Cache.Set(key, value, TimeSpan.FromMinutes(CacheDuration)) : Cache.Set(key, value);
         }
 
         /// <summary>

@@ -9,39 +9,36 @@ namespace Repository.Mongo
     /// <summary>
     /// repository implementation with caching feature, based on repository class
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">entity type</typeparam>
     public class CachedRepository<T> : Repository<T>, IRepository<T>
         where T : IEntity
     {
         /// <summary>
-        /// constructor
+        /// repository with cache
         /// </summary>
         /// <param name="connectionString">connection string</param>
         /// <param name="cache">cache</param>
         public CachedRepository(string connectionString, ICache cache) :
-            base(connectionString)
+            this(connectionString, cache, 0)
         {
-            Cache = new EntityCache<T>(cache);
         }
 
         /// <summary>
-        /// constructor
+        /// repository with time limited cache
         /// </summary>
         /// <param name="connectionString">connection string</param>
-        /// <param name="cacheDuration">cache duration for collection results</param>
+        /// <param name="cacheDuration">cache duration in minutes</param>
         /// <param name="cache">cache</param>
-        public CachedRepository(string connectionString, int cacheDuration, ICache cache) :
-            this(connectionString, cache)
+        public CachedRepository(string connectionString, ICache cache, int cacheDuration) :
+            base(connectionString)
         {
-            CacheDuration = cacheDuration;
+            Cache = new EntityCache<T>(cache, cacheDuration);
         }
 
         /// <summary>
         /// cache is public for custom usage
         /// </summary>
         public EntityCache<T> Cache { get; private set; }
-
-        private int CacheDuration { get; set; }
 
         /// <summary>
         /// delete by id
@@ -65,7 +62,7 @@ namespace Repository.Mongo
             if (!Cache.TryGet(key, out result))
             {
                 result = base.Find(filter);
-                Cache.Set(key, result, CacheDuration);
+                Cache.Set(key, result);
             }
             return result;
         }
@@ -87,7 +84,7 @@ namespace Repository.Mongo
             if (!Cache.TryGet(key, out result))
             {
                 result = base.Find(filter, order, pageIndex, size, isDescending);
-                Cache.Set(key, result, CacheDuration);
+                Cache.Set(key, result);
             }
             return result;
         }
