@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1-rc",
+  "version": "1.0.1-rc2",
   "description": "Repository.Mongo.Cached Class Library",
   "authors": [ "UsameEsendir" ],
   "tags": [ "mongo", "repository", "cache" ],
@@ -11,6 +11,6 @@
   },
   "dependencies": {
     "Rabbit.Cache": "1.1.2",
-    "Repository.Mongo": "1.0.2-rc2"
+    "Repository.Mongo": "1.0.2-rc4"
   }
 }
