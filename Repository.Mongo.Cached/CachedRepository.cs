@@ -58,7 +58,7 @@ namespace Repository.Mongo
         public override IEnumerable<T> Find(Expression<Func<T, bool>> filter)
         {
             IEnumerable<T> result = null;
-            string key = filter.ToString();
+            string key = filter.Body.ToString();
             if (!Cache.TryGet(key, out result))
             {
                 result = base.Find(filter);
@@ -80,7 +80,7 @@ namespace Repository.Mongo
                                             int pageIndex, int size, bool isDescending)
         {
             IEnumerable<T> result = null;
-            string key = filter.ToString() + order + pageIndex + size + isDescending;
+            string key = filter.Body.ToString() + order + pageIndex + size + isDescending;
             if (!Cache.TryGet(key, out result))
             {
                 result = base.Find(filter, order, pageIndex, size, isDescending);

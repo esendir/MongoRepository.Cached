@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1-rc2",
+  "version": "1.0.1-rc3",
   "description": "Repository pattern for MongoDB with caching",
   "authors": [ "UsameEsendir" ],
   "tags": [ "mongo", "repository", "cache" ],
