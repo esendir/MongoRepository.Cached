@@ -19,10 +19,8 @@ namespace Repository.Mongo
         {
             Cache = cache;
             CacheDuration = cacheDuration;
+            EntityName = typeof(T).Name;
         }
-
-        private ICache Cache { get; set; }
-        private int CacheDuration { get; set; } = 0;
 
         /// <summary>
         /// check if item is cached
@@ -33,7 +31,7 @@ namespace Repository.Mongo
         {
             if (Equals(item, default(T)))
                 return false;
-            return Contains(item.Id);
+            return Contains(Key(item.Id));
         }
 
         /// <summary>
@@ -46,7 +44,7 @@ namespace Repository.Mongo
             bool result = false;
             try
             {
-                var cItem = Cache.Get<object>(id);
+                var cItem = Cache.Get<object>(Key(id));
                 result = cItem != null;
             }
             catch
@@ -66,7 +64,7 @@ namespace Repository.Mongo
         {
             if (Equals(item, default(T)))
                 return false;
-            return Remove(item.Id);
+            return Remove(Key(item.Id));
         }
 
         /// <summary>
@@ -77,7 +75,7 @@ namespace Repository.Mongo
         public bool Remove(string id)
         {
             if (Contains(id))
-                return Cache.Remove(id);
+                return Cache.Remove(Key(id));
             return true;
         }
 
@@ -88,7 +86,9 @@ namespace Repository.Mongo
         /// <returns>true if successful, otherwise false</returns>
         public bool Set(T item)
         {
-            return Set(item.Id, item);
+            if (item == null)
+                return false;
+            return Set(Key(item.Id), item);
         }
 
         /// <summary>
@@ -98,6 +98,8 @@ namespace Repository.Mongo
         /// <returns>true if successful, otherwise false</returns>
         public bool Set(IEnumerable<T> items)
         {
+            if (items == null)
+                return false;
             foreach (var item in items)
                 Set(item);
             return true;
@@ -111,8 +113,9 @@ namespace Repository.Mongo
         /// <returns>true if successful, otherwise false</returns>
         public bool Set(string key, object value)
         {
-            if (Equals(value, null))
+            if (value == null)
                 return false;
+            key = Key(key);
             if (Contains(key))
                 Remove(key);
 
@@ -131,7 +134,7 @@ namespace Repository.Mongo
             bool result = false;
             try
             {
-                var cItem = Cache.Get<object>(id);
+                var cItem = Cache.Get<object>(Key(id));
                 if (cItem != null)
                 {
                     item = (T)cItem;
@@ -159,7 +162,7 @@ namespace Repository.Mongo
 
             try
             {
-                var cItem = Cache.Get<object>(id);
+                var cItem = Cache.Get<object>(Key(id));
                 if (cItem != null)
                 {
                     items = (IEnumerable<T>)cItem;
@@ -172,6 +175,15 @@ namespace Repository.Mongo
             }
 
             return result;
+        }
+
+        private ICache Cache { get; set; }
+        private int CacheDuration { get; set; } = 0;
+        private string EntityName { get; set; }
+
+        private string Key(string id)
+        {
+            return EntityName + id;
         }
     }
 }
