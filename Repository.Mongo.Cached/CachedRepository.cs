@@ -1,5 +1,6 @@
 ﻿using MongoDB.Driver;
 using Rabbit.Cache;
+using Serialize.Linq.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -58,7 +59,7 @@ namespace Repository.Mongo
         public override IEnumerable<T> Find(Expression<Func<T, bool>> filter)
         {
             IEnumerable<T> result = null;
-            string key = filter.ToString();
+            string key = filter.ToJson();
             if (!Cache.TryGet(key, out result))
             {
                 result = base.Find(filter);
@@ -80,7 +81,8 @@ namespace Repository.Mongo
                                             int pageIndex, int size, bool isDescending)
         {
             IEnumerable<T> result = null;
-            string key = filter.ToString() + order + pageIndex + size + isDescending;
+
+            string key = filter.ToJson() + order.ToJson() + pageIndex + size + isDescending;
             if (!Cache.TryGet(key, out result))
             {
                 result = base.Find(filter, order, pageIndex, size, isDescending);
@@ -141,10 +143,10 @@ namespace Repository.Mongo
         /// <param name="entity">entity</param>
         /// <param name="update">updated field(s)</param>
         /// <returns>true if successful, otherwise false</returns>
-        public override bool Update(T entity, UpdateDefinition<T> update)
+        public override bool Update(T entity, params UpdateDefinition<T>[] updates)
         {
             Cache.Remove(entity);
-            return base.Update(entity, update);
+            return base.Update(entity, updates);
         }
     }
 }
