@@ -1,17 +1,22 @@
 {
-  "version": "1.0.1-rc6",
-  "description": "Repository pattern for MongoDB with caching",
-  "authors": [ "UsameEsendir" ],
-  "tags": [ "mongo", "repository", "cache" ],
-  "projectUrl": "https://github.com/esendir/MongoRepository.Cached",
-  "summary": "This package contains cached repository which is based on Repository.Mongo package. Cache object should be based on Rabbit.Cache",
-  "releaseNotes": "caching behaviour updated",
+  "version": "1.0.1",
+  "description": "This package contains cached repository which is based on Repository.Mongo package. Cache object should be based on Rabbit.Cache",
+  "authors": [ "usame.esendir" ],
+  "packOptions": {
+    "tags": [ "mongo", "repository", "cache" ],
+    "projectUrl": "https://github.com/esendir/MongoRepository.Cached",
+    "summary": "Repository pattern for MongoDB with caching",
+    "releaseNotes": "caching behaviour updated"
+  },
   "frameworks": {
     "net46": { }
   },
   "dependencies": {
     "Rabbit.Cache": "1.1.2",
-    "Repository.Mongo": "1.0.3-rc1-update1",
+    "Repository.Mongo": "1.0.2",
     "Serialize.Linq": "1.2.4"
+  },
+  "buildOptions": {
+    "xmlDoc": true
   }
 }
