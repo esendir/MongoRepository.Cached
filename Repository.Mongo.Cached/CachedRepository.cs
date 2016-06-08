@@ -1,6 +1,9 @@
 ﻿using MongoDB.Driver;
+using Newtonsoft.Json;
 using Rabbit.Cache;
+using Repository.Mongo.Cached;
 using Serialize.Linq.Extensions;
+using Serialize.Linq.Factories;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -59,7 +62,7 @@ namespace Repository.Mongo
         public override IEnumerable<T> Find(Expression<Func<T, bool>> filter)
         {
             IEnumerable<T> result = null;
-            string key = filter.ToJson();
+            string key = filter.ToJson(new DefaultNodeFactory(typeof(T)), new LambdaSerializer());
             if (!Cache.TryGet(key, out result))
             {
                 result = base.Find(filter);
@@ -82,27 +85,15 @@ namespace Repository.Mongo
         {
             IEnumerable<T> result = null;
 
-            string key = filter.ToJson() + order.ToJson() + pageIndex + size + isDescending;
+            string key = filter.ToJson(new DefaultNodeFactory(typeof(T)), new LambdaSerializer()) +
+                         order.ToJson(new DefaultNodeFactory(typeof(T)), new LambdaSerializer()) +
+                         pageIndex + 
+                         size + 
+                         isDescending;
             if (!Cache.TryGet(key, out result))
             {
                 result = base.Find(filter, order, pageIndex, size, isDescending);
                 Cache.Set(key, result);
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// get by id first from cache then database
-        /// </summary>
-        /// <param name="id">id value</param>
-        /// <returns>entity of <typeparamref name="T"/></returns>
-        public override T Get(string id)
-        {
-            T result = default(T);
-            if (!Cache.TryGet(id, out result))
-            {
-                result = base.Get(id);
-                Cache.Set(result);
             }
             return result;
         }

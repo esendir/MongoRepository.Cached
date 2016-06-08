@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "This package contains cached repository which is based on Repository.Mongo package. Cache object should be based on Rabbit.Cache",
   "authors": [ "usame.esendir" ],
   "packOptions": {
@@ -12,6 +12,7 @@
     "net46": { }
   },
   "dependencies": {
+    "Newtonsoft.Json": "8.0.3",
     "Rabbit.Cache": "1.1.2",
     "Repository.Mongo": "1.0.2",
     "Serialize.Linq": "1.2.4"
