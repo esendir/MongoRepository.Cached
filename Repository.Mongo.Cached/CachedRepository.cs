@@ -6,6 +6,7 @@ using Serialize.Linq.Extensions;
 using Serialize.Linq.Factories;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Repository.Mongo
@@ -66,7 +67,10 @@ namespace Repository.Mongo
             if (!Cache.TryGet(key, out result))
             {
                 result = base.Find(filter);
-                Cache.Set(key, result);
+                if (result.Any())
+                {
+                    Cache.Set(key, result);
+                }
             }
             return result;
         }
@@ -87,13 +91,16 @@ namespace Repository.Mongo
 
             string key = filter.ToJson(new DefaultNodeFactory(typeof(T)), new LambdaSerializer()) +
                          order.ToJson(new DefaultNodeFactory(typeof(T)), new LambdaSerializer()) +
-                         pageIndex + 
-                         size + 
+                         pageIndex +
+                         size +
                          isDescending;
             if (!Cache.TryGet(key, out result))
             {
                 result = base.Find(filter, order, pageIndex, size, isDescending);
-                Cache.Set(key, result);
+                if (result.Any())
+                {
+                    Cache.Set(key, result);
+                }
             }
             return result;
         }

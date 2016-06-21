@@ -6,7 +6,7 @@
     "tags": [ "mongo", "repository", "cache" ],
     "projectUrl": "https://github.com/esendir/MongoRepository.Cached",
     "summary": "Repository pattern for MongoDB with caching",
-    "releaseNotes": "caching behaviour updated"
+    "releaseNotes": "key serialization by Newtonsoft"
   },
   "frameworks": {
     "net46": { }
@@ -14,7 +14,7 @@
   "dependencies": {
     "Newtonsoft.Json": "8.0.3",
     "Rabbit.Cache": "1.1.2",
-    "Repository.Mongo": "1.0.2",
+    "Repository.Mongo": "1.0.3",
     "Serialize.Linq": "1.2.4"
   },
   "buildOptions": {
