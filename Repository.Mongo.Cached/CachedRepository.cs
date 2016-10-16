@@ -1,13 +1,6 @@
 ﻿using MongoDB.Driver;
-using Newtonsoft.Json;
 using Rabbit.Cache;
-using Repository.Mongo.Cached;
-using Serialize.Linq.Extensions;
-using Serialize.Linq.Factories;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 
 namespace Repository.Mongo
 {
@@ -55,55 +48,6 @@ namespace Repository.Mongo
             Cache.Remove(id);
         }
 
-        /// <summary>
-        /// find entities and caches result for defined duration
-        /// </summary>
-        /// <param name="filter">expression filter</param>
-        /// <returns>collection of entity</returns>
-        public override IEnumerable<T> Find(Expression<Func<T, bool>> filter)
-        {
-            IEnumerable<T> result = null;
-            //string key = filter.ToJson(new DefaultNodeFactory(typeof(T)), new LambdaSerializer());
-            //if (!Cache.TryGet(key, out result))
-            {
-                result = base.Find(filter);
-                //if (result.Any())
-                //{
-                //    Cache.Set(result);
-                //}
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// find entities with paging and ordering in direction and caches result for defined duration
-        /// </summary>
-        /// <param name="filter">expression filter</param>
-        /// <param name="order">ordering parameters</param>
-        /// <param name="pageIndex">page index, based on 0</param>
-        /// <param name="size">number of items in page</param>
-        /// <param name="isDescending">ordering direction</param>
-        /// <returns>collection of entity</returns>
-        public override IEnumerable<T> Find(Expression<Func<T, bool>> filter, Expression<Func<T, object>> order,
-                                            int pageIndex, int size, bool isDescending)
-        {
-            IEnumerable<T> result = null;
-
-            //string key = filter.ToJson(new DefaultNodeFactory(typeof(T)), new LambdaSerializer()) +
-            //             order.ToJson(new DefaultNodeFactory(typeof(T)), new LambdaSerializer()) +
-            //             pageIndex +
-            //             size +
-            //             isDescending;
-            //if (!Cache.TryGet(key, out result))
-            {
-                result = base.Find(filter, order, pageIndex, size, isDescending);
-                //if (result.Any())
-                //{
-                //    Cache.Set(result);
-                //}
-            }
-            return result;
-        }
 
         /// <summary>
         /// get by id
