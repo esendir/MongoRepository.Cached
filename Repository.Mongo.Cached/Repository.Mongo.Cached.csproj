@@ -4,7 +4,7 @@
     <Description>This package contains cached repository which is based on Repository.Mongo package. Cache object should be based on Rabbit.Cache</Description>
     <VersionPrefix>1.0.3</VersionPrefix>
     <Authors>usame.esendir</Authors>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>netstandard1.5</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>Repository.Mongo.Cached</AssemblyName>
     <PackageId>Repository.Mongo.Cached</PackageId>
@@ -20,8 +20,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Rabbit.Cache" Version="1.1.2" />
-    <PackageReference Include="Repository.Mongo" Version="1.0.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
+    <PackageReference Include="Repository.Mongo" Version="2.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="1.1.1" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net46' ">

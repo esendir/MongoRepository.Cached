@@ -1,6 +1,8 @@
-﻿using MongoDB.Driver;
-using Rabbit.Cache;
+﻿using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
+using MongoDB.Driver;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Repository.Mongo
 {
@@ -16,7 +18,7 @@ namespace Repository.Mongo
         /// </summary>
         /// <param name="connectionString">connection string</param>
         /// <param name="cache">cache</param>
-        public CachedRepository(string connectionString, ICache cache) :
+        public CachedRepository(string connectionString, IDistributedCache cache) :
             this(connectionString, cache, 0)
         {
         }
@@ -27,7 +29,7 @@ namespace Repository.Mongo
         /// <param name="connectionString">connection string</param>
         /// <param name="cacheDuration">cache duration in minutes</param>
         /// <param name="cache">cache</param>
-        public CachedRepository(string connectionString, ICache cache, int cacheDuration) :
+        public CachedRepository(string connectionString, IDistributedCache cache, int cacheDuration) :
             base(connectionString)
         {
             Cache = new EntityCache<T>(cache, cacheDuration);
@@ -42,12 +44,24 @@ namespace Repository.Mongo
         /// delete by id
         /// </summary>
         /// <param name="id">id</param>
-        public override void Delete(string id)
+        public override bool Delete(string id)
         {
-            base.Delete(id);
+            var result = base.Delete(id);
             Cache.Remove(id);
+            return result;
         }
 
+        /// <summary>
+        /// delete by id
+        /// </summary>
+        /// <param name="id">id</param>
+        public override Task<bool> DeleteAsync(string id)
+        {
+            return Task.Run(() =>
+            {
+                return Delete(id);
+            });
+        }
 
         /// <summary>
         /// get by id
@@ -76,6 +90,18 @@ namespace Repository.Mongo
         }
 
         /// <summary>
+        /// insert entity and set to cahce
+        /// </summary>
+        /// <param name="entity">entity</param>
+        public override Task InsertAsync(T entity)
+        {
+            return Task.Run(() =>
+            {
+                Insert(entity);
+            });
+        }
+
+        /// <summary>
         /// insert entity collection and set each item into cache
         /// </summary>
         /// <param name="entities">collection of entities</param>
@@ -86,25 +112,63 @@ namespace Repository.Mongo
         }
 
         /// <summary>
+        /// insert entity collection and set each item into cache
+        /// </summary>
+        /// <param name="entities">collection of entities</param>
+        public override Task InsertAsync(IEnumerable<T> entities)
+        {
+            return Task.Run(() =>
+            {
+                Insert(entities);
+            });
+        }
+
+        /// <summary>
         /// replace an existing entity both on database and cache
         /// </summary>
         /// <param name="entity">entity</param>
-        public override void Replace(T entity)
+        public override bool Replace(T entity)
         {
-            base.Replace(entity);
+            var result = base.Replace(entity);
             Cache.Set(entity);
+            return result;
+        }
+        /// <summary>
+        /// replace an existing entity both on database and cache
+        /// </summary>
+        /// <param name="entity">entity</param>
+        public override Task<bool> ReplaceAsync(T entity)
+        {
+            return Task.Run(() =>
+            {
+                return Replace(entity);
+            });
         }
 
         /// <summary>
         /// update an entity with updated fields and remove item from cache
         /// </summary>
         /// <param name="entity">entity</param>
-        /// <param name="update">updated field(s)</param>
+        /// <param name="updates">updated field(s)</param>
         /// <returns>true if successful, otherwise false</returns>
         public override bool Update(T entity, params UpdateDefinition<T>[] updates)
         {
             Cache.Remove(entity);
             return base.Update(entity, updates);
+        }
+
+        /// <summary>
+        /// update an entity with updated fields and remove item from cache
+        /// </summary>
+        /// <param name="entity">entity</param>
+        /// <param name="updates">updated field(s)</param>
+        /// <returns>true if successful, otherwise false</returns>
+        public override Task<bool> UpdateAsync(T entity, params UpdateDefinition<T>[] updates)
+        {
+            return Task.Run(() =>
+            {
+                return Update(entity, updates);
+            });
         }
     }
 }
