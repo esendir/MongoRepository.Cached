@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace Repository.Mongo
 {
@@ -10,14 +9,14 @@ namespace Repository.Mongo
     /// entity based caching library
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class EntityCache<T> where T : IEntity
+    public class DistributedCache<T> : IEntityCache<T> where T : IEntity
     {
         /// <summary>
         /// constructor with limited duration cache
         /// </summary>
         /// <param name="cache">rabbit cache</param>
         /// <param name="cacheDuration">duration in minutes</param>
-        public EntityCache(IDistributedCache cache, int cacheDuration)
+        public DistributedCache(IDistributedCache cache, int cacheDuration)
         {
             Cache = cache;
             CacheDuration = cacheDuration;
@@ -198,7 +197,5 @@ namespace Repository.Mongo
         {
             return EntityName + id;
         }
-
-
     }
 }

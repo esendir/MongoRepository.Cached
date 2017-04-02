@@ -32,13 +32,35 @@ namespace Repository.Mongo
         public CachedRepository(string connectionString, IDistributedCache cache, int cacheDuration) :
             base(connectionString)
         {
-            Cache = new EntityCache<T>(cache, cacheDuration);
+            Cache = new DistributedCache<T>(cache, cacheDuration);
+        }
+
+        /// <summary>
+        /// repository with cache
+        /// </summary>
+        /// <param name="connectionString">connection string</param>
+        /// <param name="cache">cache</param>
+        public CachedRepository(string connectionString, IMemoryCache cache) :
+            this(connectionString, cache, 0)
+        {
+        }
+
+        /// <summary>
+        /// repository with time limited cache
+        /// </summary>
+        /// <param name="connectionString">connection string</param>
+        /// <param name="cacheDuration">cache duration in minutes</param>
+        /// <param name="cache">cache</param>
+        public CachedRepository(string connectionString, IMemoryCache cache, int cacheDuration) :
+            base(connectionString)
+        {
+            Cache = new MemoryCache<T>(cache, cacheDuration);
         }
 
         /// <summary>
         /// cache is public for custom usage
         /// </summary>
-        public EntityCache<T> Cache { get; private set; }
+        public IEntityCache<T> Cache { get; private set; }
 
         /// <summary>
         /// delete by id
