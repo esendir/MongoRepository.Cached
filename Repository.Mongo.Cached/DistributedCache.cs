@@ -1,6 +1,7 @@
-﻿using Rabbit.Cache;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 
 namespace Repository.Mongo
 {
@@ -8,14 +9,14 @@ namespace Repository.Mongo
     /// entity based caching library
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class EntityCache<T> where T : IEntity
+    public class DistributedCache<T> : IEntityCache<T> where T : IEntity
     {
         /// <summary>
         /// constructor with limited duration cache
         /// </summary>
         /// <param name="cache">rabbit cache</param>
         /// <param name="cacheDuration">duration in minutes</param>
-        public EntityCache(ICache cache, int cacheDuration)
+        public DistributedCache(IDistributedCache cache, int cacheDuration)
         {
             Cache = cache;
             CacheDuration = cacheDuration;
@@ -44,7 +45,7 @@ namespace Repository.Mongo
             bool result = false;
             try
             {
-                var cItem = Cache.Get<object>(Key(id));
+                var cItem = Cache.Get(Key(id));
                 result = cItem != null;
             }
             catch
@@ -75,7 +76,7 @@ namespace Repository.Mongo
         public bool Remove(string id)
         {
             if (Contains(id))
-                return Cache.Remove(Key(id));
+                Cache.Remove(Key(id));
             return true;
         }
 
@@ -111,7 +112,7 @@ namespace Repository.Mongo
         /// <param name="key">custom key value, entity id is default</param>
         /// <param name="value">item to cache</param>
         /// <returns>true if successful, otherwise false</returns>
-        public bool Set(string key, object value)
+        public bool Set(string key, T value)
         {
             if (value == null)
                 return false;
@@ -119,7 +120,18 @@ namespace Repository.Mongo
             if (Contains(key))
                 Remove(key);
 
-            return CacheDuration > 0 ? Cache.Set(key, value, TimeSpan.FromMinutes(CacheDuration)) : Cache.Set(key, value);
+            var cacheValue = JsonConvert.SerializeObject(value);
+
+            if (CacheDuration > 0)
+            {
+                Cache.SetString(key, cacheValue, new DistributedCacheEntryOptions() { AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(CacheDuration) });
+            }
+            else
+            {
+                Cache.SetString(key, cacheValue);
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -134,10 +146,10 @@ namespace Repository.Mongo
             bool result = false;
             try
             {
-                var cItem = Cache.Get<object>(Key(id));
+                var cItem = Cache.GetString(Key(id));
                 if (cItem != null)
                 {
-                    item = (T)cItem;
+                    item = (T)JsonConvert.DeserializeObject(cItem);
                     result = true;
                 }
             }
@@ -162,10 +174,10 @@ namespace Repository.Mongo
 
             try
             {
-                var cItem = Cache.Get<object>(Key(id));
+                var cItem = Cache.GetString(Key(id));
                 if (cItem != null)
                 {
-                    items = (IEnumerable<T>)cItem;
+                    items = (IEnumerable<T>)JsonConvert.DeserializeObject(cItem);
                     result = true;
                 }
             }
@@ -177,7 +189,7 @@ namespace Repository.Mongo
             return result;
         }
 
-        private ICache Cache { get; set; }
+        private IDistributedCache Cache { get; set; }
         private int CacheDuration { get; set; } = 0;
         private string EntityName { get; set; }
 

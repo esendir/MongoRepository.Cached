@@ -1,14 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Repository.Mongo.Cached", "Repository.Mongo.Cached\Repository.Mongo.Cached.xproj", "{EEF7147A-83D3-4D61-9C1F-C17658B42F67}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3F581870-E016-4EB4-ADFC-11EE3AB51038}"
-	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
-	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository.Mongo.Cached", "Repository.Mongo.Cached\Repository.Mongo.Cached.csproj", "{EEF7147A-83D3-4D61-9C1F-C17658B42F67}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
